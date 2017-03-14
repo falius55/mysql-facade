@@ -1,0 +1,14 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'org.slf4j:slf4j-api:1.7.13'
+    compile 'mysql:mysql-connector-java:6.0.5'
+
+    testCompile 'junit:junit:4.11'
+    testCompile 'mysql:mysql-connector-java:6.0.5'
+}
