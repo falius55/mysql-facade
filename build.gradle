@@ -5,6 +5,11 @@ repositories {
     jcenter()
 }
 
+javadoc {
+        destinationDir = file "doc/javadoc"
+        options.links << 'http://docs.oracle.com/javase/jp/8/api/'
+    }
+
 dependencies {
     compile 'org.slf4j:slf4j-api:1.7.13'
     compile 'mysql:mysql-connector-java:6.0.5'
