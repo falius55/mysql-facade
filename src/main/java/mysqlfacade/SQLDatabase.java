@@ -12,7 +12,20 @@ import java.util.Map;
 /**
  *
  * <p>
- * テーブルを指定するにはクラスオブジェクトを必要とするメソッドに渡します。あるクラスがテーブルを表すにはそのstatic変数tableNameにテーブル名をStringで保持している必要があります。DatabaseColumn実装クラスにtableName変数を持たせてテーブルを表すという形を想定していますが、必ずしもDatabaseColumnがテーブル名を表す必要はありません。
+ * テーブル名を指定するにはtableNameメソッドを持つクラスのクラスオブジェクトを使用します。<br>
+ * あるクラスがテーブルを表すにはそのstaticメソッドtableName()がテーブル名をStringで返す必要があります。<br>
+ * DatabaseColumn実装クラスにtableNameメソッドを持たせてテーブルを表すという形を想定していますが、必ずしもDatabaseColumnがテーブル名を表す必要はありません。<br>
+ * もしこのメソッドを持っていないクラスのクラスオブジェクトが渡された場合、IllegalArgumentExceptionが投げられます。
+ *
+ * <p>
+ * テーブルを指定するクラスが持つ必要のあるメソッドのシグニチャ<br>
+ * {@code
+ * public static String tableName();
+ * }
+ *
+ * <p>
+ * テーブルの構成は{@link DatabaseColumn}インタフェースを実装した列挙型のクラスを使用します。<br>
+ * テーブル名もこのクラスで表すのが良いでしょう。<br>
  */
 public interface SQLDatabase extends AutoCloseable {
 
@@ -65,8 +78,14 @@ public interface SQLDatabase extends AutoCloseable {
      */
     int delete(Class<?> table, String whereClause, Object... whereArgs) throws SQLException;
 
+    /**
+     * whereColumnの値がwhereArgである行をすべて削除します。
+     */
     int delete(Class<?> table, DatabaseColumn whereColumn, Object whereArg) throws SQLException;
 
+    /**
+     * 渡された列挙型クラスが表わす内容でテーブルを作成します。
+     */
     <T extends Enum<T> & DatabaseColumn> void create(Class<T> table) throws SQLException;
 
     /**
@@ -74,6 +93,9 @@ public interface SQLDatabase extends AutoCloseable {
      */
     int empty(Class<?> table) throws SQLException;
 
+    /**
+     * 指定されたテーブルを削除します。
+     */
     void drop(Class<?> table) throws SQLException;
 
     /**
@@ -98,6 +120,9 @@ public interface SQLDatabase extends AutoCloseable {
      */
     void clear() throws SQLException;
 
+    /**
+     * 指定した列の値を合計した値を返します。
+     */
     int sum(Class<?> table, DatabaseColumn column) throws SQLException;
 
     int sum(Class<?> table, DatabaseColumn column, String whereClause, Object... whereArgs) throws SQLException;
@@ -110,6 +135,9 @@ public interface SQLDatabase extends AutoCloseable {
 
     int min(Class<?> table, DatabaseColumn column, String whereClause, Object... whereArgs) throws SQLException;
 
+    /**
+     * 指定されたテーブルの行数を返します。
+     */
     int count(Class<?> table) throws SQLException;
 
     int count(Class<?> table, DatabaseColumn column) throws SQLException;
