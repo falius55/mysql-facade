@@ -9,7 +9,8 @@ import java.util.Map;
  * <p>
  * テーブル名を指定するにはtableNameメソッドを持つクラスのクラスオブジェクトを使用します。<br>
  * あるクラスがテーブルを表すにはそのstaticメソッドtableName()がテーブル名をStringで返す必要があります。<br>
- * DatabaseColumn実装クラスにtableNameメソッドを持たせてテーブルを表すという形を想定していますが、必ずしもDatabaseColumnがテーブル名を表す必要はありません。<br>
+ * DatabaseColumn実装クラスにtableNameメソッドを持たせてテーブルを表すという形を想定していますが、
+ *     必ずしもDatabaseColumnがテーブル名を表す必要はありません。<br>
  * もしこのメソッドを持っていないクラスのクラスオブジェクトが渡された場合、IllegalArgumentExceptionが投げられます。
  *
  * <p>
