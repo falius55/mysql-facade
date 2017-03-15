@@ -24,3 +24,28 @@ dependencies {
     testCompile 'junit:junit:4.11'
     testCompile 'mysql:mysql-connector-java:6.0.5'
 }
+
+task createTestPropertyFile << {
+	println ''
+
+	File prop = file 'src/test/resources/test.properties'
+	Scanner sc = new Scanner(System.in);
+
+	println "test-database-user >> "
+	def user = sc.nextLine()
+	println "\ntest-database-password >> "
+	def pass = sc.nextLine()
+	println "\ntest-database-name >> "
+	def dbName = sc.nextLine()
+
+	prop << "\ndbtest-database-user=${user}\n"
+	prop << "dbtest-database-password=${pass}\n"
+	prop << "dbtest-database-name=${dbName}\n"
+}
+
+createTestPropertyFile.onlyIf {
+	File prop = file 'src/test/resources/test.properties'
+	!prop.exists()
+}
+
+test.dependsOn createTestPropertyFile
