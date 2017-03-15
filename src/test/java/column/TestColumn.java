@@ -1,7 +1,7 @@
-package test.column;
+package column;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 import mysqlfacade.DatabaseColumn;
 

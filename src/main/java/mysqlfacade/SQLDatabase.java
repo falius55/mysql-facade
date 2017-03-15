@@ -2,11 +2,6 @@ package mysqlfacade;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import java.util.Optional;
-import java.util.OptionalInt;;
-import java.util.OptionalDouble;
-import java.util.OptionalLong;
 import java.util.Map;
 
 /**

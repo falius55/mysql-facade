@@ -1,6 +1,12 @@
 apply plugin: 'java'
 apply plugin: 'maven'
 
+def defaultEncoding = 'UTF-8'
+
+tasks.withType(JavaCompile) {
+	options.encoding = defaultEncoding
+}
+
 repositories {
     jcenter()
 }

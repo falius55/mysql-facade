@@ -1,28 +1,26 @@
 package mysqlfacade;
 
-import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
-
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Deque;
-import java.util.ArrayDeque;
-import java.util.NoSuchElementException;
-
-import java.text.SimpleDateFormat;
-
+import java.lang.reflect.Method;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 /**
  * {@inheritDoc}
  */
 public class PreparedDatabase implements SQLDatabase {
     private static final boolean USE_SSL = false;
+    private static final boolean USE_LEGACY_DATETIME_CODE = false;
+    private static final String SERVER_TIME_ZONE = "JST";
     private final String mDBName;
 	private final Deque<Entry> mEntries = new ArrayDeque<Entry>();
 	private final Connection mConnection;
@@ -40,7 +38,9 @@ public class PreparedDatabase implements SQLDatabase {
             Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
 
             // Drivermanagerに接続(データベースへの接続)
-            String url = String.format("jdbc:mysql://localhost/%s?useSSL=%b", dbName, USE_SSL);
+            String url = String.format("jdbc:mysql://localhost/%s?"
+            + "useSSL=%b&useLegacyDatetimeCode=%b&serverTimezone=%s",
+                    dbName, USE_SSL, USE_LEGACY_DATETIME_CODE, SERVER_TIME_ZONE);
             mConnection = DriverManager.getConnection(url,user,password);
 
         } catch (ClassNotFoundException | SQLException | InstantiationException | IllegalAccessException e) {
