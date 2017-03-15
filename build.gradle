@@ -1,10 +1,13 @@
+import groovy.swing.SwingBuilder
+import java.awt.Dimension
+
 apply plugin: 'java'
 apply plugin: 'maven'
 
 def defaultEncoding = 'UTF-8'
 
 tasks.withType(JavaCompile) {
-	options.encoding = defaultEncoding
+  options.encoding = defaultEncoding
 }
 
 repositories {
@@ -12,9 +15,9 @@ repositories {
 }
 
 javadoc {
-        destinationDir = file "doc/javadoc"
-        options.links << 'http://docs.oracle.com/javase/jp/8/api/'
-        options.encoding = defaultEncoding
+    destinationDir = file "doc/javadoc"
+    options.links << 'http://docs.oracle.com/javase/jp/8/api/'
+    options.encoding = defaultEncoding
     }
 
 dependencies {
@@ -26,26 +29,66 @@ dependencies {
 }
 
 task createTestPropertyFile << {
-	println ''
+    println ''
 
-	File prop = file 'src/test/resources/test.properties'
-	Scanner sc = new Scanner(System.in);
+    File prop = file 'src/test/resources/test.properties'
 
-	println "test-database-user >> "
-	def user = sc.nextLine()
-	println "\ntest-database-password >> "
-	def pass = sc.nextLine()
-	println "\ntest-database-name >> "
-	def dbName = sc.nextLine()
+    def dialog = new TestPropertyDialog()
+    println 'input your database infomation to the dialog'
 
-	prop << "\ndbtest-database-user=${user}\n"
-	prop << "dbtest-database-password=${pass}\n"
-	prop << "dbtest-database-name=${dbName}\n"
+    if (dialog.show()) {
+        prop << "\ndbtest-database-user=${dialog.user}\n"
+        prop << "dbtest-database-password=${dialog.pass}\n"
+        prop << "dbtest-database-name=${dialog.dbName}\n"
+    } else {
+        throw new IllegalStateException("no data in test property file : '${prop.toString()}'")
+    }
 }
 
 createTestPropertyFile.onlyIf {
-	File prop = file 'src/test/resources/test.properties'
-	!prop.exists()
+  File prop = file 'src/test/resources/test.properties'
+  !prop.exists()
 }
 
 test.dependsOn createTestPropertyFile
+
+class TestPropertyDialog {
+    String user
+    String pass
+    String dbName
+
+    boolean show() {
+        def builder = new SwingBuilder()
+        builder.edt {
+            dialog(modal: true,
+            title: 'Input Database Infomation',
+            alwaysOnTop: true,
+            resizable: true,
+            preferredSize: new Dimension(240, 180),
+            pack: true,
+            show: true
+            ) {
+
+                vbox {
+                    label(text: 'user name:')
+                    def userNameInput = textField()
+
+                    label(text: 'password:')
+                    def passwordInput = textField()
+
+                    label(text: 'name:')
+                    def dbNameInput = textField()
+
+                    button(defaultButton: true, text: 'OK', actionPerformed: {
+                        user = userNameInput.text
+                        pass = passwordInput.text
+                        dbName = dbNameInput.text
+                        dispose()
+                    })
+                }
+            }
+        }
+
+        user && pass && dbName
+    }
+}
