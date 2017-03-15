@@ -1,3 +1,7 @@
 .gradle/
 build/
 *.swp
+/bin/
+/.settings/
+/.classpath
+/.project

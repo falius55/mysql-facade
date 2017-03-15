@@ -1,32 +1,28 @@
-package test;
-
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
 import org.junit.After;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import mysqlfacade.SQLs;
-import mysqlfacade.DatabaseColumn;
-import mysqlfacade.SQLDatabase;
-import mysqlfacade.PreparedDatabase;
-
-import test.column.TestColumn;
-import test.column.FailedColumn;
-
-import java.io.InputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.LinkedHashMap;
-import java.util.EnumMap;
-import java.util.Properties;
-import java.sql.SQLException;
-import java.sql.ResultSet;
+import column.FailedColumn;
+import column.TestColumn;
+import jp.gr.java_conf.falius.mysqlfacade.DatabaseColumn;
+import jp.gr.java_conf.falius.mysqlfacade.PreparedDatabase;
+import jp.gr.java_conf.falius.mysqlfacade.SQLDatabase;
+import jp.gr.java_conf.falius.mysqlfacade.SQLs;
 
 public class DatabaseTest {
     private static Properties mProperties;

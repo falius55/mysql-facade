@@ -1,6 +1,12 @@
 apply plugin: 'java'
 apply plugin: 'maven'
 
+def defaultEncoding = 'UTF-8'
+
+tasks.withType(JavaCompile) {
+	options.encoding = defaultEncoding
+}
+
 repositories {
     jcenter()
 }
@@ -8,6 +14,7 @@ repositories {
 javadoc {
         destinationDir = file "doc/javadoc"
         options.links << 'http://docs.oracle.com/javase/jp/8/api/'
+        options.encoding = defaultEncoding
     }
 
 dependencies {
