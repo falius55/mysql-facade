@@ -26,21 +26,21 @@ dependencies {
 }
 
 task createTestPropertyFile << {
-	System.out.println();
+	println ''
 
 	File prop = file 'src/test/resources/test.properties'
 	Scanner sc = new Scanner(System.in);
 
 	println "test-database-user >> "
-	def user = sc.nextLine();
+	def user = sc.nextLine()
 	println "\ntest-database-password >> "
-	def pass = sc.nextLine();
+	def pass = sc.nextLine()
 	println "\ntest-database-name >> "
-	def dbName = sc.nextLine();
+	def dbName = sc.nextLine()
 
-	prop.append("\ndbtest-database-user=${user}\n");
-	prop.append("dbtest-database-password=${pass}\n");
-	prop.append("dbtest-database-name=${dbName}\n");
+	prop << "\ndbtest-database-user=${user}\n"
+	prop << "dbtest-database-password=${pass}\n"
+	prop << "dbtest-database-name=${dbName}\n"
 }
 
 createTestPropertyFile.onlyIf {
