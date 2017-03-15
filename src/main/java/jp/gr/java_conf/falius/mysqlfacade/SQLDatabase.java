@@ -1,4 +1,4 @@
-package mysqlfacade;
+package jp.gr.java_conf.falius.mysqlfacade;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
