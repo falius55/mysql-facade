@@ -19,10 +19,10 @@ import org.junit.Test;
 
 import column.FailedColumn;
 import column.TestColumn;
-import mysqlfacade.DatabaseColumn;
-import mysqlfacade.PreparedDatabase;
-import mysqlfacade.SQLDatabase;
-import mysqlfacade.SQLs;
+import jp.gr.java_conf.falius.mysqlfacade.DatabaseColumn;
+import jp.gr.java_conf.falius.mysqlfacade.PreparedDatabase;
+import jp.gr.java_conf.falius.mysqlfacade.SQLDatabase;
+import jp.gr.java_conf.falius.mysqlfacade.SQLs;
 
 public class DatabaseTest {
     private static Properties mProperties;

@@ -3,7 +3,7 @@ package column;
 import java.util.HashMap;
 import java.util.Map;
 
-import mysqlfacade.DatabaseColumn;
+import jp.gr.java_conf.falius.mysqlfacade.DatabaseColumn;
 
 public enum TestColumn implements DatabaseColumn {
     ID("id", "int", "not null primary key auto_increment"),

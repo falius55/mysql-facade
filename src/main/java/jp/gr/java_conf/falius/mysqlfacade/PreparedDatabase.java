@@ -1,4 +1,4 @@
-package mysqlfacade;
+package jp.gr.java_conf.falius.mysqlfacade;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,6 +13,8 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Map;
 import java.util.NoSuchElementException;
+
+import jp.gr.java_conf.falius.mysqlfacade.SQLDatabase.Entry;
 
 /**
  * {@inheritDoc}

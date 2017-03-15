@@ -1,4 +1,4 @@
-package mysqlfacade;
+package jp.gr.java_conf.falius.mysqlfacade;
 
 /**
  * データベースの列を表すインタフェースです。
