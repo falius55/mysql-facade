@@ -21,7 +21,80 @@ import java.util.Map;
  *
  * <p>
  * テーブルの構成は{@link DatabaseColumn}インタフェースを実装した列挙型のクラスを使用します。<br>
- * テーブル名もこのクラスで表すのが良いでしょう。<br>
+ * テーブル名もこのクラスで表すのが良いでしょう。
+ * <p>
+ * 推奨されるテーブル定義の記述例は以下の通りです。
+ * <pre>
+ * {@code
+ * public enum UserTable implements DatabaseColumn {
+ *      ID("id", "integer", "primary key auto increment not null"),
+ *      NAME("name", "varchar(256)", "unique not null"),
+ *      PASSWORD("password", "varchr(64)", "not null");
+ *
+ *      public static String tableName() {
+ *          return "user_table";
+ *      }
+ *
+ *      private final String mName;
+ *      private final String mType;
+ *      private final String mOption;
+ *      UserTable(String name, String type, String option) {
+ *          mName = name;
+ *          mType = type;
+ *          mOption = option;
+ *      }
+ *      @Override
+ *      String type() {
+ *          return mType;
+ *      }
+ *
+ *      @Override
+ *      String columnString() {
+ *          return String.join(" ", mName, mType, mOption);
+ *      }
+ *
+ *      @Override
+ *      String toString() {
+ *          return mName;
+ *      }
+ * }
+ * }
+ * </pre>
+ *
+ * <p>
+ * 以上の定義を用いたCRUD操作は以下のようになります。
+ * <pre>
+ * {@code
+ * String dbName = "sample_db";
+ * String user = "sample_user";
+ * String pass = "pass";
+ *
+ * SQLDatabase db = new PreparedDatabase(dbName, user, pass);
+ *
+ * // テーブル作成
+ * db.create(UserTable.class);
+ *
+ * // レコードの挿入
+ * Map<UserTable, Object> values = new EnumMap<>(UserTable.class);
+ * values.put(UserTable.NAME, "test user");
+ * values.put(UserTable.PASSWORD, "userpassword321");
+ * long id = db.insert(UserTable.class, values);
+ *
+ *  // レコードの更新
+ * Map<UserTable, Object> values2 = new EnumMap<>(UserTable.class);
+ * values2.put(UserTable.PASSWORD, "newuserpassword683");
+ * db.update(UserTable.class, values, UserTable.ID, 1);
+ *
+ *  // 取得
+ * ResultSet rs = db.selectAllColumn(UserTable.class, UserTable.ID, id);
+ * while (rs.next()) {
+ *      System.out.println(rs.getString(UserTable.PASSWORD.toString()));  // "newuserpassword683"
+ * }
+ *
+ *  // レコードの削除
+ * db.delete(UserTable.class, "id = ? and name = ?", id, "test user");
+ *
+ * </pre>
  */
 public interface SQLDatabase extends AutoCloseable {
 
@@ -30,7 +103,7 @@ public interface SQLDatabase extends AutoCloseable {
      * @param table static変数tableNameにテーブル名を保持しているクラス
      * @param columns 選択するカラム
      * @param whereClause 条件節
-     * @param whereArgs 条件節に?が含まれていれば、埋め込む値。数値はラッパークラスで渡してください。
+     * @param whereArgs 条件節に?が含まれていれば、埋め込む値
      */
     <T extends DatabaseColumn> ResultSet select(
             Class<?> table, T[] columns, String whereClause, Object... whereArgs) throws SQLException;
@@ -55,7 +128,7 @@ public interface SQLDatabase extends AutoCloseable {
      * @param table static変数tableNameにテーブル名を保持しているクラス
      * @param values 更新列からその新しい値へのマップ。値がString型であれば''(シングルくオーテーション)で囲み、そうでなければtoString()の戻り値がそのままSQL文に埋め込まれます。
      * @param whereClause 条件節
-     * @param whereArgs 条件節に?が含まれていれば、埋め込む値。数値はラッパークラスで渡してください。
+     * @param whereArgs 条件節に?が含まれていれば、埋め込む値
      */
     int update(Class<?> table, Map<? extends DatabaseColumn, ?> values, String whereClause, Object... whereArgs)
         throws SQLException;
@@ -140,71 +213,71 @@ public interface SQLDatabase extends AutoCloseable {
 
     int count(Class<?> table, DatabaseColumn column, String whereClause, Object... whereArgs) throws SQLException;
 
-	/**
-	 * データベースへの各問い合わせを担当するクラスのインタフェース
-	 */
-	interface Entry {
+    /**
+    * データベースへの各問い合わせを担当するクラスのインタフェース
+    */
+    interface Entry {
 
-		/**
-		 *	SQL文の問い合わせを実行します
-		 *	@return 自身のインスタンス
-         *	@throws SQLException 問い合わせに失敗した場合
-		 */
-		ResultSet query() throws SQLException;
+        /**
+        *    SQL文の問い合わせを実行します
+        *    @return 自身のインスタンス
+         *    @throws SQLException 問い合わせに失敗した場合
+        */
+        ResultSet query() throws SQLException;
 
-		/**
-		 *	データベースへの更新を実行します
-		 *	@return	正常に処理が終了した行数
-         *	@throws SQLException 更新に失敗した場合
-		 */
-		int update() throws SQLException;
+        /**
+        *    データベースへの更新を実行します
+        *    @return    正常に処理が終了した行数
+         *    @throws SQLException 更新に失敗した場合
+        */
+        int update() throws SQLException;
 
         ResultSet getGeneratedKeys() throws SQLException;
 
-		/**
-		 * 終了処理を行います
+        /**
+        * 終了処理を行います
          * @throws SQLException データベースアクセスエラーが発生した場合
-		 */
-		void close() throws SQLException;
+        */
+        void close() throws SQLException;
 
-		/**
-		 *	SQL文のクエスチョンマークにint値をセットします
-		 *	@param x セットする整数
-		 *	@return 自らのインスタンス
-         *	@throws SQLException setした回数がパラメータマーカーに対応しない場合、データベースアクセスエラーが発生した場合、またはクローズしたあとで実行された場合
-		 */
-		Entry setInt(int x) throws SQLException;
+        /**
+        *    SQL文のクエスチョンマークにint値をセットします
+        *    @param x セットする整数
+        *    @return 自らのインスタンス
+         *    @throws SQLException setした回数がパラメータマーカーに対応しない場合、データベースアクセスエラーが発生した場合、またはクローズしたあとで実行された場合
+        */
+        Entry setInt(int x) throws SQLException;
 
-		/**
-		 *	SQL文のクエスチョンマークに文字列をセットします
-		 *	@param x セットする文字列
-		 *	@return 自らのインスタンス
-         *	@throws SQLException setした回数がパラメータマーカーに対応しない場合、データベースアクセスエラーが発生した場合、またはクローズしたあとで実行された場合
-		 */
-		Entry setString(String x) throws SQLException;
+        /**
+        *    SQL文のクエスチョンマークに文字列をセットします
+        *    @param x セットする文字列
+        *    @return 自らのインスタンス
+         *    @throws SQLException setした回数がパラメータマーカーに対応しない場合、データベースアクセスエラーが発生した場合、またはクローズしたあとで実行された場合
+        */
+        Entry setString(String x) throws SQLException;
 
-		/**
-		 *	SQL文のクエスチョンマークに、double値をセットします
-		 *	@param	x	セットするdouble値
-		 *	@return 自らのインスタンス
-         *	@throws SQLException setした回数がパラメータマーカーに対応しない場合、データベースアクセスエラーが発生した場合、またはクローズしたあとで実行された場合
-		 */
-		Entry setDouble(double x) throws SQLException;
+        /**
+        *    SQL文のクエスチョンマークに、double値をセットします
+        *    @param    x    セットするdouble値
+        *    @return 自らのインスタンス
+         *    @throws SQLException setした回数がパラメータマーカーに対応しない場合、データベースアクセスエラーが発生した場合、またはクローズしたあとで実行された場合
+        */
+        Entry setDouble(double x) throws SQLException;
 
-		/**
-		 *	SQL文のクエスチョンマークにfloat値をセットします
-		 *	@param x セットするfloat値
-		 *	@return 自らのインスタンス
-         *	@throws SQLException setした回数がパラメータマーカーに対応しない場合、データベースアクセスエラーが発生した場合、またはクローズしたあとで実行された場合
-		 */
-		Entry setFloat(float x) throws SQLException;
+        /**
+        *    SQL文のクエスチョンマークにfloat値をセットします
+        *    @param x セットするfloat値
+        *    @return 自らのインスタンス
+         *    @throws SQLException setした回数がパラメータマーカーに対応しない場合、データベースアクセスエラーが発生した場合、またはクローズしたあとで実行された場合
+        */
+        Entry setFloat(float x) throws SQLException;
 
-		/**
-		 *	SQL文のクエスチョンマークにlong値をセットします
-		 *	@param x セットするlong値
-		 *	@return 自らのインスタンス
-         *	@throws SQLException setした回数がパラメータマーカーに対応しない場合、データベースアクセスエラーが発生した場合、またはクローズしたあとで実行された場合
-		 */
-		Entry setLong(long x) throws SQLException;
-	}
+        /**
+        *    SQL文のクエスチョンマークにlong値をセットします
+        *    @param x セットするlong値
+        *    @return 自らのインスタンス
+         *    @throws SQLException setした回数がパラメータマーカーに対応しない場合、データベースアクセスエラーが発生した場合、またはクローズしたあとで実行された場合
+        */
+        Entry setLong(long x) throws SQLException;
+    }
 }

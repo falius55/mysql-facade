@@ -8,7 +8,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Map;
@@ -364,17 +363,6 @@ public class PreparedDatabase implements SQLDatabase {
     }
 
     /**
-     *	ミリ秒を"yyyy-MM-dd HH:mm:ss"のフォーマットに変換します
-     *	@param millis 変換するミリ秒の値
-     *	@return フォーマットされた文字列
-     */
-    private static String dateFormat(long millis) {
-        java.util.Date date = new java.util.Date(millis); // java.sql.Date()の場合、時分秒が切り捨てられてしまうので、java.util.Date()を使う必要がある
-        String saved = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
-        return saved;
-    }
-
-    /**
      * データベースへの各問い合わせを担当するクラス
      */
     public static class PreparedEntry implements Entry {
@@ -395,7 +383,7 @@ public class PreparedDatabase implements SQLDatabase {
         }
 
         /**
-         *	{@inheritDoc}
+         *    {@inheritDoc}
          */
         @Override
         public ResultSet query() throws SQLException {

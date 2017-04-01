@@ -1,10 +1,11 @@
 package jp.gr.java_conf.falius.mysqlfacade;
 
-import java.util.Map;
 import java.sql.Timestamp;
+import java.util.Map;
 
 public class SQLs {
 
+    private SQLs() {}
     /**
      *
      * @param whereClause 条件節。nullか空文字を渡すと条件なしになる。
@@ -143,8 +144,8 @@ public class SQLs {
     }
 
     public static String formatString(long millis, String format) {
-		java.util.Date date = new java.util.Date(millis); // java.sql.Date()の場合、時分秒が切り捨てられてしまうので、java.util.Date()を使う必要がある
-		return new java.text.SimpleDateFormat(format).format(date);
+        java.util.Date date = new java.util.Date(millis); // java.sql.Date()の場合、時分秒が切り捨てられてしまうので、java.util.Date()を使う必要がある
+        return new java.text.SimpleDateFormat(format).format(date);
     }
 
     /**
