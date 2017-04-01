@@ -8,13 +8,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Map;
 import java.util.NoSuchElementException;
-
-import jp.gr.java_conf.falius.mysqlfacade.SQLDatabase.Entry;
 
 /**
  * {@inheritDoc}
@@ -24,8 +21,8 @@ public class PreparedDatabase implements SQLDatabase {
     private static final boolean USE_LEGACY_DATETIME_CODE = false;
     private static final String SERVER_TIME_ZONE = "JST";
     private final String mDBName;
-	private final Deque<Entry> mEntries = new ArrayDeque<Entry>();
-	private final Connection mConnection;
+    private final Deque<Entry> mEntries = new ArrayDeque<Entry>();
+    private final Connection mConnection;
 
     /**
      * @param dbName 接続するデータベース名
@@ -41,9 +38,9 @@ public class PreparedDatabase implements SQLDatabase {
 
             // Drivermanagerに接続(データベースへの接続)
             String url = String.format("jdbc:mysql://localhost/%s?"
-            + "useSSL=%b&useLegacyDatetimeCode=%b&serverTimezone=%s",
+                    + "useSSL=%b&useLegacyDatetimeCode=%b&serverTimezone=%s",
                     dbName, USE_SSL, USE_LEGACY_DATETIME_CODE, SERVER_TIME_ZONE);
-            mConnection = DriverManager.getConnection(url,user,password);
+            mConnection = DriverManager.getConnection(url, user, password);
 
         } catch (ClassNotFoundException | SQLException | InstantiationException | IllegalAccessException e) {
             throw new SQLException("database failed connect", e);
@@ -54,7 +51,8 @@ public class PreparedDatabase implements SQLDatabase {
      * {@inheritDoc}
      */
     @Override
-    public <T extends DatabaseColumn> ResultSet select(Class<?> table, T[] columns, String whereClause, Object... whereArgs) throws SQLException {
+    public <T extends DatabaseColumn> ResultSet select(Class<?> table, T[] columns, String whereClause,
+            Object... whereArgs) throws SQLException {
         String tableName = tableName(table);
         String sql = SQLs.createSelectSql(tableName, columns, whereClause);
 
@@ -74,7 +72,7 @@ public class PreparedDatabase implements SQLDatabase {
         Entry entry = execute(sql);
         setArgs(entry, whereArgs);
         return entry.query();
-            }
+    }
 
     /**
      * {@inheritDoc}
@@ -96,7 +94,8 @@ public class PreparedDatabase implements SQLDatabase {
      * {@inheritDoc}
      */
     @Override
-    public int update(Class<?> table, Map<? extends DatabaseColumn, ?> values, String whereClause, Object... whereArgs) throws SQLException {
+    public int update(Class<?> table, Map<? extends DatabaseColumn, ?> values, String whereClause, Object... whereArgs)
+            throws SQLException {
         String tableName = tableName(table);
         String sql = SQLs.createUpdateSql(tableName, values, whereClause);
 
@@ -109,7 +108,8 @@ public class PreparedDatabase implements SQLDatabase {
      * {@inheritDoc}
      */
     @Override
-    public int update(Class<?> table, Map<? extends DatabaseColumn, ?> values, DatabaseColumn whereColumn, Object whereArg) throws SQLException {
+    public int update(Class<?> table, Map<? extends DatabaseColumn, ?> values, DatabaseColumn whereColumn,
+            Object whereArg) throws SQLException {
         return update(table, values, whereColumn.toString() + "=?", whereArg);
     }
 
@@ -188,7 +188,7 @@ public class PreparedDatabase implements SQLDatabase {
     public boolean isExistTable(Class<?> table) throws SQLException {
         String tableName = tableName(table);
         return execute(String.format("show tables where Tables_in_%s like ?", mDBName))
-            .setString(tableName).query().next();
+                .setString(tableName).query().next();
     }
 
     /**
@@ -215,7 +215,7 @@ public class PreparedDatabase implements SQLDatabase {
     public Entry execute(String sql) throws SQLException {
         Entry entry = new PreparedEntry(mConnection, sql);
         mEntries.add(entry);
-		return entry;
+        return entry;
     }
 
     /**
@@ -279,7 +279,7 @@ public class PreparedDatabase implements SQLDatabase {
     @Override
     public int min(Class<?> table, DatabaseColumn column) throws SQLException {
         return execIntFunc("min", table, column.toString(), "");
-            }
+    }
 
     /**
      * {@inheritDoc}
@@ -287,14 +287,14 @@ public class PreparedDatabase implements SQLDatabase {
     @Override
     public int min(Class<?> table, DatabaseColumn column, String whereClause, Object... whereArgs) throws SQLException {
         return execIntFunc("min", table, column.toString(), whereClause, whereArgs);
-            }
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
     public int count(Class<?> table) throws SQLException {
-     return execIntFunc("count", table, "*", "");
+        return execIntFunc("count", table, "*", "");
     }
 
     /**
@@ -309,11 +309,13 @@ public class PreparedDatabase implements SQLDatabase {
      * {@inheritDoc}
      */
     @Override
-    public int count(Class<?> table, DatabaseColumn column, String whereClause, Object... whereArgs) throws SQLException {
+    public int count(Class<?> table, DatabaseColumn column, String whereClause, Object... whereArgs)
+            throws SQLException {
         return execIntFunc("count", table, column.toString(), whereClause, whereArgs);
     }
 
-    private int execIntFunc(String funcName, Class<?> table, String column, String whereClause, Object... whereArgs) throws SQLException {
+    private int execIntFunc(String funcName, Class<?> table, String column, String whereClause, Object... whereArgs)
+            throws SQLException {
         String tableName = tableName(table);
         String sql = SQLs.createSelectFuncSql(funcName, tableName, column, whereClause);
 
@@ -351,61 +353,50 @@ public class PreparedDatabase implements SQLDatabase {
 
     private String tableName(Class<?> table) {
         try {
-            Method method
-                = table.getMethod(DatabaseColumn.TABLE_NAME_METHOD);
+            Method method = table.getMethod(DatabaseColumn.TABLE_NAME_METHOD);
             return (String) method.invoke(null);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             throw new IllegalArgumentException("not found static tableName method\n"
-                    + "require public 'static' String " + DatabaseColumn.TABLE_NAME_METHOD + "() in " + table.getName());
+                    + "require public 'static' String " + DatabaseColumn.TABLE_NAME_METHOD + "() in "
+                    + table.getName());
         }
     }
 
-	/**
-	 *	ミリ秒を"yyyy-MM-dd HH:mm:ss"のフォーマットに変換します
-	 *	@param millis 変換するミリ秒の値
-	 *	@return フォーマットされた文字列
-	 */
-	private static String dateFormat(long millis) {
-		java.util.Date date = new java.util.Date(millis); // java.sql.Date()の場合、時分秒が切り捨てられてしまうので、java.util.Date()を使う必要がある
-		String saved = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
-		return saved;
-	}
+    /**
+     * データベースへの各問い合わせを担当するクラス
+     */
+    public static class PreparedEntry implements Entry {
+        private final PreparedStatement mPreparedStatement;
+        private int mIndexCounter = 0;
 
-	/**
-	 * データベースへの各問い合わせを担当するクラス
-	 */
-	public static class PreparedEntry implements Entry {
-		private final PreparedStatement mPreparedStatement;
-		private int mIndexCounter = 0;
+        /**
+         * @param sql SQL文
+         * @throws SQLException 生成失敗
+         */
+        private PreparedEntry(Connection connect, String sql) throws SQLException {
+            try {
+                mIndexCounter = 0;
+                mPreparedStatement = connect.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            } catch (SQLException e) {
+                throw new SQLException("fail new Entry", e);
+            }
+        }
 
-		/**
-		 * @param sql SQL文
-		 * @throws SQLException 生成失敗
-		 */
-		private PreparedEntry(Connection connect, String sql) throws SQLException {
-			try {
-				mIndexCounter = 0;
-				mPreparedStatement = connect.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-			} catch (SQLException e) {
-				throw new SQLException("fail new Entry", e);
-			}
-		}
+        /**
+         *    {@inheritDoc}
+         */
+        @Override
+        public ResultSet query() throws SQLException {
+            return mPreparedStatement.executeQuery();
+        }
 
-		/**
-		 *	{@inheritDoc}
-		 */
-		@Override
-		public ResultSet query() throws SQLException {
-            return  mPreparedStatement.executeQuery();
-		}
-
-		/**
+        /**
          * {@inheritDoc}
-		 */
-		@Override
-		public int update() throws SQLException {
+         */
+        @Override
+        public int update() throws SQLException {
             return mPreparedStatement.executeUpdate();
-		}
+        }
 
         /**
          * {@inheritDoc}
@@ -421,60 +412,60 @@ public class PreparedDatabase implements SQLDatabase {
          * すでにクローズされた状態でcloseメソッドを呼び出すと、操作は行われません
          * @throws SQLException データベースアクセスエラーが発生した場合
          */
-		@Override
-		public void close() throws SQLException {
-			mPreparedStatement.close();
+        @Override
+        public void close() throws SQLException {
+            mPreparedStatement.close();
             // Statementをcloseすると、ResultSetも自動的にcloseされる
-		}
+        }
 
-		/**
+        /**
          * {@inheritDoc}
-		 */
-		@Override
-		public Entry setInt(int x) throws SQLException {
+         */
+        @Override
+        public Entry setInt(int x) throws SQLException {
             mIndexCounter++;
             mPreparedStatement.setInt(mIndexCounter, x);
             return this;
-		}
+        }
 
-		/**
+        /**
          * {@inheritDoc}
-		 */
-		@Override
-		public Entry setString(String x) throws SQLException {
+         */
+        @Override
+        public Entry setString(String x) throws SQLException {
             mIndexCounter++;
             mPreparedStatement.setString(mIndexCounter, x);
             return this;
-		}
+        }
 
-		/**
+        /**
          * {@inheritDoc}
-		 */
-		@Override
-		public Entry setDouble(double x) throws SQLException {
+         */
+        @Override
+        public Entry setDouble(double x) throws SQLException {
             mIndexCounter++;
             mPreparedStatement.setDouble(mIndexCounter, x);
             return this;
-		}
+        }
 
-		/**
+        /**
          * {@inheritDoc}
-		 */
-		@Override
-		public Entry setFloat(float x) throws SQLException {
+         */
+        @Override
+        public Entry setFloat(float x) throws SQLException {
             mIndexCounter++;
             mPreparedStatement.setFloat(mIndexCounter, x);
             return this;
-		}
+        }
 
-		/**
+        /**
          * {@inheritDoc}
-		 */
-		@Override
-		public Entry setLong(long x) throws SQLException {
+         */
+        @Override
+        public Entry setLong(long x) throws SQLException {
             mIndexCounter++;
             mPreparedStatement.setLong(mIndexCounter, x);
             return this;
-		}
-	}
+        }
+    }
 }
