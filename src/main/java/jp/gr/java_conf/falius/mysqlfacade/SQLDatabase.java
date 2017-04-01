@@ -43,17 +43,17 @@ import java.util.Map;
  *          mType = type;
  *          mOption = option;
  *      }
- *      @Override
+ *      \@Override
  *      String type() {
  *          return mType;
  *      }
  *
- *      @Override
+ *      \@Override
  *      String columnString() {
  *          return String.join(" ", mName, mType, mOption);
  *      }
  *
- *      @Override
+ *      \@Override
  *      String toString() {
  *          return mName;
  *      }
@@ -93,7 +93,7 @@ import java.util.Map;
  *
  *  // レコードの削除
  * db.delete(UserTable.class, "id = ? and name = ?", id, "test user");
- *
+ * }
  * </pre>
  */
 public interface SQLDatabase extends AutoCloseable {
@@ -110,16 +110,19 @@ public interface SQLDatabase extends AutoCloseable {
 
     /**
      * 条件に合致した行のすべての列を取得します。
+     * @throws SQLException
      */
     ResultSet selectAllColumns(Class<?> table, String whereClause, Object... whereArgs) throws SQLException;
 
     /**
      * whereColumnの値がwhereArgである行のすべての列を取得します。
+     * @throws SQLException
      */
     ResultSet selectAllColumns(Class<?> table, DatabaseColumn whereColumn, Object whereArg) throws SQLException;
 
     /**
      * すべての行のすべての列を取得します。
+     * @throws SQLException
      */
     ResultSet selectAll(Class<?> table) throws SQLException;
 
@@ -129,155 +132,255 @@ public interface SQLDatabase extends AutoCloseable {
      * @param values 更新列からその新しい値へのマップ。値がString型であれば''(シングルくオーテーション)で囲み、そうでなければtoString()の戻り値がそのままSQL文に埋め込まれます。
      * @param whereClause 条件節
      * @param whereArgs 条件節に?が含まれていれば、埋め込む値
+     * @throws SQLException
      */
     int update(Class<?> table, Map<? extends DatabaseColumn, ?> values, String whereClause, Object... whereArgs)
-        throws SQLException;
+            throws SQLException;
 
-    int update(Class<?> table, Map<? extends DatabaseColumn, ?> values, DatabaseColumn whereColumn, Object whereArg) throws SQLException;
+    /**
+     *
+     * @param table
+     * @param values
+     * @param whereColumn
+     * @param whereArg
+     * @return
+     * @throws SQLException
+     */
+    int update(Class<?> table, Map<? extends DatabaseColumn, ?> values, DatabaseColumn whereColumn, Object whereArg)
+            throws SQLException;
 
     /**
      * 新しいレコードを作成します。
      * @param values カラムからその値へのマップ
      * @return 最後に挿入したカラムのID。なければ-1
+     * @throws SQLException
      */
-    long insert( Class<?> table, Map<? extends DatabaseColumn, ?> values) throws SQLException;
+    long insert(Class<?> table, Map<? extends DatabaseColumn, ?> values) throws SQLException;
 
     /**
      * 条件に合致したレコードを削除します。
+     * @throws SQLException
      */
     int delete(Class<?> table, String whereClause, Object... whereArgs) throws SQLException;
 
     /**
      * whereColumnの値がwhereArgである行をすべて削除します。
+     * @throws SQLException
      */
     int delete(Class<?> table, DatabaseColumn whereColumn, Object whereArg) throws SQLException;
 
     /**
      * 渡された列挙型クラスが表わす内容でテーブルを作成します。
+     * @throws SQLException
      */
     <T extends Enum<T> & DatabaseColumn> void create(Class<T> table) throws SQLException;
 
     /**
      * 指定されたテーブルのすべてのレコードを削除します。
+     * @throws SQLException
      */
     int empty(Class<?> table) throws SQLException;
 
     /**
      * 指定されたテーブルを削除します。
+     * @throws SQLException
      */
     void drop(Class<?> table) throws SQLException;
 
     /**
      * テーブルが存在するかどうか。
+     * @throws SQLException
      */
     boolean isExistTable(Class<?> table) throws SQLException;
 
+    /**
+     *
+     * @param table
+     * @param whereClause
+     * @param whereArgs
+     * @return
+     * @throws SQLException
+     */
     boolean isExistRecord(Class<?> table, String whereClause, Object... whereArgs) throws SQLException;
 
+    /**
+     *
+     * @param table
+     * @param whereColumn
+     * @param whereArg
+     * @return
+     * @throws SQLException
+     */
     boolean isExistRecord(Class<?> table, DatabaseColumn whereColumn, Object whereArg) throws SQLException;
 
     /**
      * SQL文の実行準備をします。
+     * @throws SQLException
      */
     Entry execute(String sql) throws SQLException;
 
+    /**
+     * @throws SQLException
+     */
     @Override
     void close() throws SQLException;
 
     /**
      * 内部に保持されているEntryオブジェクトすべてに終了処理を施し、Entryスタックを空にします。
+     * @throws SQLException
      */
     void clear() throws SQLException;
 
     /**
      * 指定した列の値を合計した値を返します。
+     * @throws SQLException
      */
     int sum(Class<?> table, DatabaseColumn column) throws SQLException;
 
+    /**
+     *
+     * @param table
+     * @param column
+     * @param whereClause
+     * @param whereArgs
+     * @return
+     * @throws SQLException
+     */
     int sum(Class<?> table, DatabaseColumn column, String whereClause, Object... whereArgs) throws SQLException;
 
+    /**
+     *
+     * @param table
+     * @param column
+     * @return
+     * @throws SQLException
+     */
     int max(Class<?> table, DatabaseColumn column) throws SQLException;
 
+    /**
+     *
+     * @param table
+     * @param column
+     * @param whereClause
+     * @param whereArgs
+     * @return
+     * @throws SQLException
+     */
     int max(Class<?> table, DatabaseColumn column, String whereClause, Object... whereArgs) throws SQLException;
 
+    /**
+     *
+     * @param table
+     * @param column
+     * @return
+     * @throws SQLException
+     */
     int min(Class<?> table, DatabaseColumn column) throws SQLException;
 
+    /**
+     *
+     * @param table
+     * @param column
+     * @param whereClause
+     * @param whereArgs
+     * @return
+     * @throws SQLException
+     */
     int min(Class<?> table, DatabaseColumn column, String whereClause, Object... whereArgs) throws SQLException;
 
     /**
      * 指定されたテーブルの行数を返します。
+     * @throws SQLException
      */
     int count(Class<?> table) throws SQLException;
 
+    /**
+     *
+     * @param table
+     * @param column
+     * @return
+     * @throws SQLException
+     */
     int count(Class<?> table, DatabaseColumn column) throws SQLException;
 
+    /**
+     *
+     * @param table
+     * @param column
+     * @param whereClause
+     * @param whereArgs
+     * @return
+     * @throws SQLException
+     */
     int count(Class<?> table, DatabaseColumn column, String whereClause, Object... whereArgs) throws SQLException;
 
     /**
-    * データベースへの各問い合わせを担当するクラスのインタフェース
-    */
+     *
+     * データベースへの各問い合わせを担当するクラスのインタフェース
+     *
+     */
     interface Entry {
 
         /**
-        *    SQL文の問い合わせを実行します
-        *    @return 自身のインスタンス
-         *    @throws SQLException 問い合わせに失敗した場合
-        */
+         * SQL文の問い合わせを実行します
+         * @return 自身のインスタンス
+         * @throws SQLException 問い合わせに失敗した場合
+         */
         ResultSet query() throws SQLException;
 
         /**
-        *    データベースへの更新を実行します
-        *    @return    正常に処理が終了した行数
-         *    @throws SQLException 更新に失敗した場合
-        */
+         * データベースへの更新を実行します
+         * @return    正常に処理が終了した行数
+         * @throws SQLException 更新に失敗した場合
+         */
         int update() throws SQLException;
 
         ResultSet getGeneratedKeys() throws SQLException;
 
         /**
-        * 終了処理を行います
+         * 終了処理を行います
          * @throws SQLException データベースアクセスエラーが発生した場合
-        */
+         */
         void close() throws SQLException;
 
         /**
-        *    SQL文のクエスチョンマークにint値をセットします
-        *    @param x セットする整数
-        *    @return 自らのインスタンス
-         *    @throws SQLException setした回数がパラメータマーカーに対応しない場合、データベースアクセスエラーが発生した場合、またはクローズしたあとで実行された場合
-        */
+         * SQL文のクエスチョンマークにint値をセットします
+         * @param x セットする整数
+         * @return 自らのインスタンス
+         * @throws SQLException setした回数がパラメータマーカーに対応しない場合、データベースアクセスエラーが発生した場合、またはクローズしたあとで実行された場合
+         */
         Entry setInt(int x) throws SQLException;
 
         /**
-        *    SQL文のクエスチョンマークに文字列をセットします
-        *    @param x セットする文字列
-        *    @return 自らのインスタンス
-         *    @throws SQLException setした回数がパラメータマーカーに対応しない場合、データベースアクセスエラーが発生した場合、またはクローズしたあとで実行された場合
-        */
+         * SQL文のクエスチョンマークに文字列をセットします
+         * @param x セットする文字列
+         * @return 自らのインスタンス
+         * @throws SQLException setした回数がパラメータマーカーに対応しない場合、データベースアクセスエラーが発生した場合、またはクローズしたあとで実行された場合
+         */
         Entry setString(String x) throws SQLException;
 
         /**
-        *    SQL文のクエスチョンマークに、double値をセットします
-        *    @param    x    セットするdouble値
-        *    @return 自らのインスタンス
-         *    @throws SQLException setした回数がパラメータマーカーに対応しない場合、データベースアクセスエラーが発生した場合、またはクローズしたあとで実行された場合
-        */
+         * SQL文のクエスチョンマークに、double値をセットします
+         * @param    x    セットするdouble値
+         * @return 自らのインスタンス
+         * @throws SQLException setした回数がパラメータマーカーに対応しない場合、データベースアクセスエラーが発生した場合、またはクローズしたあとで実行された場合
+         */
         Entry setDouble(double x) throws SQLException;
 
         /**
-        *    SQL文のクエスチョンマークにfloat値をセットします
-        *    @param x セットするfloat値
-        *    @return 自らのインスタンス
-         *    @throws SQLException setした回数がパラメータマーカーに対応しない場合、データベースアクセスエラーが発生した場合、またはクローズしたあとで実行された場合
-        */
+         * SQL文のクエスチョンマークにfloat値をセットします
+         * @param x セットするfloat値
+         * @return 自らのインスタンス
+         * @throws SQLException setした回数がパラメータマーカーに対応しない場合、データベースアクセスエラーが発生した場合、またはクローズしたあとで実行された場合
+         */
         Entry setFloat(float x) throws SQLException;
 
         /**
-        *    SQL文のクエスチョンマークにlong値をセットします
-        *    @param x セットするlong値
-        *    @return 自らのインスタンス
-         *    @throws SQLException setした回数がパラメータマーカーに対応しない場合、データベースアクセスエラーが発生した場合、またはクローズしたあとで実行された場合
-        */
+         * SQL文のクエスチョンマークにlong値をセットします
+         * @param x セットするlong値
+         * @return 自らのインスタンス
+         * @throws SQLException setした回数がパラメータマーカーに対応しない場合、データベースアクセスエラーが発生した場合、またはクローズしたあとで実行された場合
+         */
         Entry setLong(long x) throws SQLException;
     }
 }
