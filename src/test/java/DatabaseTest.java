@@ -83,12 +83,12 @@ public class DatabaseTest {
         assertThat(id1, is(1L));
 
         Map<TestColumn, Object> values2 = new EnumMap<>(TestColumn.class);
-        values.put(TestColumn.NAME, "name2");
-        values.put(TestColumn.PASSWORD, "pass2");
-        values.put(TestColumn.SCORE, 45);
-        values.put(TestColumn.SEX, "female");
-        values.put(TestColumn.SAVED, "2014-12-1 14:16:2");
-        long id2 = mDB.insert(TestColumn.class, values);
+        values2.put(TestColumn.NAME, "name2");
+        values2.put(TestColumn.PASSWORD, "pass2");
+        values2.put(TestColumn.SCORE, 45);
+        values2.put(TestColumn.SEX, "female");
+        values2.put(TestColumn.SAVED, "2014-12-1 14:16:2");
+        long id2 = mDB.insert(TestColumn.class, values2);
         assertThat(id2, is(2L));
 
         assertThat(mDB.count(TestColumn.class), is(2));
@@ -253,17 +253,16 @@ public class DatabaseTest {
         assertThat(result2, is(expected2));
     }
 
-    @Test
-    public void updateSqlStringByExpression() {
-        String table = "test_table";
-        Map<DatabaseColumn, Object> values = new LinkedHashMap<>();
-        values.put(TestColumn.SCORE, new SQLs.Expression(SQLs.createSelectFuncSql("max", table, TestColumn.SCORE.toString(), null)));
-        String whereClause = "id == ?";
-
-        String expected = "UPDATE test_table SET score = (SELECT max(score) FROM test_table) WHERE id == ?";
-        String result = SQLs.createUpdateSql(table, values, whereClause);
-        assertThat(result, is(expected));
-    }
+//    public void updateSqlStringByExpression() {
+//        String table = "test_table";
+//        Map<DatabaseColumn, Object> values = new LinkedHashMap<>();
+//        values.put(TestColumn.SCORE, new SQLs.Expression(SQLs.createSelectFuncSql("max", table, TestColumn.SCORE.toString(), null)));
+//        String whereClause = "id == ?";
+//
+//        String expected = "UPDATE test_table SET score = (SELECT max(score) FROM test_table) WHERE id == ?";
+//        String result = SQLs.createUpdateSql(table, values, whereClause);
+//        assertThat(result, is(expected));
+//    }
 
     @Test
     public void insertSqlString() {

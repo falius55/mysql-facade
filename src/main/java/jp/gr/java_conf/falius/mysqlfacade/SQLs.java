@@ -1,10 +1,11 @@
 package jp.gr.java_conf.falius.mysqlfacade;
 
-import java.util.Map;
 import java.sql.Timestamp;
+import java.util.Map;
 
 public class SQLs {
 
+    private SQLs() {}
     /**
      *
      * @param whereClause 条件節。nullか空文字を渡すと条件なしになる。
@@ -143,12 +144,12 @@ public class SQLs {
     }
 
     public static String formatString(long millis, String format) {
-		java.util.Date date = new java.util.Date(millis); // java.sql.Date()の場合、時分秒が切り捨てられてしまうので、java.util.Date()を使う必要がある
-		return new java.text.SimpleDateFormat(format).format(date);
+        java.util.Date date = new java.util.Date(millis); // java.sql.Date()の場合、時分秒が切り捨てられてしまうので、java.util.Date()を使う必要がある
+        return new java.text.SimpleDateFormat(format).format(date);
     }
 
     /**
-     * <p>J
+     * <p>
      * 更新する値などにSelect文を埋め込むなど式で表現したい場合に使用します。
      * 文字列で表した式を直接各値に指定すると'(シングルくオーテーション)で囲まれてしまうため、
      * このクラスを利用して式を表現します。
@@ -158,16 +159,16 @@ public class SQLs {
      * 条件節に式を使いたい場合には、プレイスホルダーを使わずに直接条件節に組み込んでください。
      *
      */
-    public static class Expression {
-        private final String mExpression;
-
-        public Expression(String expression) {
-            mExpression = "(" + expression + ")";
-        }
-
-        @Override
-        public String toString() {
-            return mExpression;
-        }
-    }
+//    public static class Expression {
+//        private final String mExpression;
+//
+//        public Expression(String expression) {
+//            mExpression = "(" + expression + ")";
+//        }
+//
+//        @Override
+//        public String toString() {
+//            return mExpression;
+//        }
+//    }
 }
