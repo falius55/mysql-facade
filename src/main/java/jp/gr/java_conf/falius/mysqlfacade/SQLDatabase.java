@@ -43,17 +43,15 @@ import java.util.Map;
  *          mType = type;
  *          mOption = option;
  *      }
- *      \@Override
+ *
  *      String type() {
  *          return mType;
  *      }
  *
- *      \@Override
  *      String columnString() {
  *          return String.join(" ", mName, mType, mOption);
  *      }
  *
- *      \@Override
  *      String toString() {
  *          return mName;
  *      }

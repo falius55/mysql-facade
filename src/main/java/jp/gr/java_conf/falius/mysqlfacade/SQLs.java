@@ -149,7 +149,7 @@ public class SQLs {
     }
 
     /**
-     * <p>J
+     * <p>
      * 更新する値などにSelect文を埋め込むなど式で表現したい場合に使用します。
      * 文字列で表した式を直接各値に指定すると'(シングルくオーテーション)で囲まれてしまうため、
      * このクラスを利用して式を表現します。
@@ -159,16 +159,16 @@ public class SQLs {
      * 条件節に式を使いたい場合には、プレイスホルダーを使わずに直接条件節に組み込んでください。
      *
      */
-    public static class Expression {
-        private final String mExpression;
-
-        public Expression(String expression) {
-            mExpression = "(" + expression + ")";
-        }
-
-        @Override
-        public String toString() {
-            return mExpression;
-        }
-    }
+//    public static class Expression {
+//        private final String mExpression;
+//
+//        public Expression(String expression) {
+//            mExpression = "(" + expression + ")";
+//        }
+//
+//        @Override
+//        public String toString() {
+//            return mExpression;
+//        }
+//    }
 }

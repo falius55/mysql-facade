@@ -253,17 +253,16 @@ public class DatabaseTest {
         assertThat(result2, is(expected2));
     }
 
-    @Test
-    public void updateSqlStringByExpression() {
-        String table = "test_table";
-        Map<DatabaseColumn, Object> values = new LinkedHashMap<>();
-        values.put(TestColumn.SCORE, new SQLs.Expression(SQLs.createSelectFuncSql("max", table, TestColumn.SCORE.toString(), null)));
-        String whereClause = "id == ?";
-
-        String expected = "UPDATE test_table SET score = (SELECT max(score) FROM test_table) WHERE id == ?";
-        String result = SQLs.createUpdateSql(table, values, whereClause);
-        assertThat(result, is(expected));
-    }
+//    public void updateSqlStringByExpression() {
+//        String table = "test_table";
+//        Map<DatabaseColumn, Object> values = new LinkedHashMap<>();
+//        values.put(TestColumn.SCORE, new SQLs.Expression(SQLs.createSelectFuncSql("max", table, TestColumn.SCORE.toString(), null)));
+//        String whereClause = "id == ?";
+//
+//        String expected = "UPDATE test_table SET score = (SELECT max(score) FROM test_table) WHERE id == ?";
+//        String result = SQLs.createUpdateSql(table, values, whereClause);
+//        assertThat(result, is(expected));
+//    }
 
     @Test
     public void insertSqlString() {
